@@ -349,9 +349,13 @@ func (ctx *ValidationContext) findSignature(root *etree.Element) (*types.Signatu
 
 	// Traverse the tree looking for a Signature element
 	err := etreeutils.NSFindIterate(root, Namespace, SignatureTag, func(ctx etreeutils.NSContext, el *etree.Element) error {
+		err := validateShape(el)
+		if err != nil {
+			return err
+		}
 
 		found := false
-		err := etreeutils.NSFindChildrenIterateCtx(ctx, el, Namespace, SignedInfoTag,
+		err = etreeutils.NSFindChildrenIterateCtx(ctx, el, Namespace, SignedInfoTag,
 			func(ctx etreeutils.NSContext, signedInfo *etree.Element) error {
 				detachedSignedInfo, err := etreeutils.NSDetatch(ctx, signedInfo)
 				if err != nil {
